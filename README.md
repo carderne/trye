@@ -18,6 +18,20 @@ uv add trye
 from trye import trye, Ok, Err
 ```
 
+### Wrapping a function call
+
+Pass the function and its arguments directly:
+
+```python
+result = trye(json.loads, '{"foo": "bar"}')
+```
+
+Or use a lambda for more complex expressions:
+
+```python
+result = trye(lambda: db.query("SELECT * FROM users"))
+```
+
 ### isinstance narrowing
 
 ```python
@@ -60,6 +74,26 @@ if result.err is not None:
     handle_error(result.err)
 if result.val is not None:
     use_value(result.val)
+```
+
+### Creating results manually
+
+You can create `Ok` and `Err` objects directly:
+
+```python
+from trye import Ok, Err
+
+success = Ok(42)
+failure = Err(ValueError("something went wrong"))
+```
+
+This is useful for bridging non-trye code, writing tests, or returning results from your own functions:
+
+```python
+def parse_config(path: str) -> Result[Config]:
+    if not path.endswith(".toml"):
+        return Err(ValueError(f"unsupported format: {path}"))
+    return Ok(load_toml(path))
 ```
 
 ## API
