@@ -15,7 +15,7 @@ uv add trye
 ## Usage
 
 ```python
-from trye import trye, Ok, Err
+from trye import trye, is_ok, is_err, Ok, Err
 ```
 
 ### Wrapping a function call
@@ -32,26 +32,36 @@ Or use a lambda for more complex expressions:
 result = trye(lambda: db.query("SELECT * FROM users"))
 ```
 
-### isinstance narrowing
+### Checking and narrowing
+
+`is_ok()` and `is_err()` check the result and narrow the type for your type checker:
 
 ```python
 result = trye(json.loads, '{"foo": "bar"}')
-if isinstance(result, Ok):
+if is_ok(result):
     print(result.val)    # dict
 else:
     print(result.err)    # Exception
 ```
 
-### isinstance with else
-
 ```python
 result = trye(some_function, arg1, arg2)
-if isinstance(result, Err):
+if is_err(result):
     log_error(result.err)
     return
 # result is narrowed to Ok here
 use_value(result.val)
 ```
+
+### unwrap
+
+If you just want the value or to re-raise the exception:
+
+```python
+value = trye(json.loads, data).unwrap()
+```
+
+`unwrap()` returns the value from `Ok`, or raises the exception from `Err`.
 
 ### match/case
 
@@ -101,8 +111,10 @@ def parse_config(path: str) -> Result[Config]:
 | Name | Description |
 |---|---|
 | `trye(f, *args, **kwargs)` | Call `f` with args, return `Ok(result)` or `Err(exception)` |
-| `Ok[T]` | Success wrapper. `.val: T`, `.err: None` |
-| `Err` | Error wrapper. `.err: Exception`, `.val: None` |
+| `is_ok(result)` | `TypeIs` narrowing to `Ok[T]` |
+| `is_err(result)` | `TypeIs` narrowing to `Err` |
+| `Ok[T]` | Success wrapper. `.val: T`, `.err: None`, `.unwrap() -> T` |
+| `Err` | Error wrapper. `.err: Exception`, `.val: None`, `.unwrap() -> Never` |
 | `Result[T]` | Type alias for `Ok[T] \| Err` |
 
 Arguments are fully typed via `ParamSpec`, so type checkers will catch incorrect arguments to the wrapped function.
