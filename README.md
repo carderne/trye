@@ -15,7 +15,7 @@ uv add trye
 ## Usage
 
 ```python
-from trye import trye, is_ok, is_err, Ok, Err
+from trye import trye, atrye, is_ok, is_err, Ok, Err
 ```
 
 ### Wrapping a function call
@@ -30,6 +30,12 @@ Or use a lambda for more complex expressions:
 
 ```python
 result = trye(lambda: db.query("SELECT * FROM users"))
+```
+
+For async functions, use `atrye`:
+
+```python
+result = await atrye(fetch_user, user_id)
 ```
 
 ### Checking and narrowing
@@ -111,6 +117,7 @@ def parse_config(path: str) -> Result[Config]:
 | Name | Description |
 |---|---|
 | `trye(f, *args, **kwargs)` | Call `f` with args, return `Ok(result)` or `Err(exception)` |
+| `atrye(f, *args, **kwargs)` | Async version — await `f`, return `Ok(result)` or `Err(exception)` |
 | `is_ok(result)` | `TypeIs` narrowing to `Ok[T]` |
 | `is_err(result)` | `TypeIs` narrowing to `Err` |
 | `Ok[T]` | Success wrapper. `.val: T`, `.err: None`, `.unwrap() -> T` |

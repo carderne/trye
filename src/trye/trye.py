@@ -1,5 +1,5 @@
-from collections.abc import Callable
-from typing import Never, TypeIs, final
+from collections.abc import Callable, Coroutine
+from typing import Any, Never, TypeIs, final
 
 
 @final
@@ -55,5 +55,13 @@ def trye[**P, R](f: Callable[P, R], *args: P.args, **kwargs: P.kwargs) -> Result
     """Call `f` with the given arguments, returning Ok(result) or Err(exception)."""
     try:
         return Ok(f(*args, **kwargs))
+    except Exception as e:
+        return Err(e)
+
+
+async def atrye[**P, R](f: Callable[P, Coroutine[Any, Any, R]], *args: P.args, **kwargs: P.kwargs) -> Result[R]:
+    """Await `f` with the given arguments, returning Ok(result) or Err(exception)."""
+    try:
+        return Ok(await f(*args, **kwargs))
     except Exception as e:
         return Err(e)
