@@ -14,7 +14,7 @@ all = [{ref = "fmt"}, {ref = "lint"}, {ref = "check"}, {ref = "test"}]
 
 [project]
 name = "trye"
-version = "0.1.2"
+dynamic = ["version"]
 description = "Ergonomic exception handling for Python."
 readme = "README.md"
 authors = [
@@ -50,8 +50,11 @@ dev = [
 ]
 
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
+
+[tool.hatch.version]
+source = "vcs"
 
 [tool.ruff]
 target-version = "py314"
